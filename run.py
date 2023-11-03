@@ -3,7 +3,7 @@ from pathlib import Path
 import requests
 
 source_path = Path.cwd() / 'data'
-web_service_ip = ''
+#web_service_url = 'http://34.83.170.114/feedback/'
 
 for f in Path(source_path).iterdir():
   with open(f) as feedback_file:
@@ -14,4 +14,7 @@ for f in Path(source_path).iterdir():
       'date': feedback_lines[2].rstrip(),
       'feedback': feedback_lines[3].rstrip()
     }
-    print(feedback_entry)
+#    res = requests.post(web_service_url, feedback_entry)
+#    res.raise_for_status()
+#    print(res.status_code)
+    
