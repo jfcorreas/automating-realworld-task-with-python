@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import json
 import locale
@@ -72,17 +74,19 @@ def cars_dict_to_table(car_data):
     table_data.append([item["id"], format_car(item["car"]), item["price"], item["total_sales"]])
   return table_data
 
-data = load_data("data/car_sales.json")
-summary = process_data(data)
-print(summary)
+def main(argv):
+  """Process the JSON data and generate a full report out of it."""
+  data = load_data("data/car_sales.json")
+  summary = process_data(data)
+  print(summary)
 
-# Turn this into a PDF report
-reports.generate(
-  "output/cars.pdf",
-  "Sales summary for last month",
-  "<br/>".join(summary),
-  cars_dict_to_table(data)
-)
+  # Turn this into a PDF report
+  reports.generate(
+    "output/cars.pdf",
+    "Sales summary for last month",
+    "<br/>".join(summary),
+    cars_dict_to_table(data)
+  )
 
 # Send the PDF report as an email attachment
 
@@ -92,6 +96,9 @@ reports.generate(
 # body = "\n".join(summary)
 # message = emails.generate(sender, receiver, subject, body, "/tmp/cars.pdf")
 # emails.send(message)
+
+if __name__ == "__main__":
+    main(True)
 
 # TODO: Sort the list of cars in the PDF by total sales.
 # TODO: Create a pie chart for the total sales of each car made.
