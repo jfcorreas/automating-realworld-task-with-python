@@ -81,11 +81,12 @@ def main(argv):
   print(summary)
 
   # Turn this into a PDF report
+  data_sorted = sorted(data, key=lambda item: item['total_sales'], reverse=True)
   reports.generate(
     "output/cars.pdf",
     "Sales summary for last month",
     "<br/>".join(summary),
-    cars_dict_to_table(data)
+    cars_dict_to_table(data_sorted)
   )
 
 # Send the PDF report as an email attachment
