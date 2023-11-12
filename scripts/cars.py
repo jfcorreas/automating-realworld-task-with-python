@@ -41,7 +41,10 @@ def process_data(data):
 
     # Also handle max sales
     item_model = format_car(item["car"])
-    sales_by_model[item_model] = item["total_sales"]
+    sales_by_model[item_model] = {
+      'total_sales': item["total_sales"],
+      'revenue': item_revenue
+    }
 
     # Also handle most popular car_year
     item_year =  item["car"]["car_year"]
@@ -57,7 +60,7 @@ def process_data(data):
     else:
       sales_by_made[item_make] = item["total_sales"]
 
-  sales_by_model_sorted = dict(sorted(sales_by_model.items(), key=lambda item: item[1], reverse=True))
+  sales_by_model_sorted = dict(sorted(sales_by_model.items(), key=lambda item: item[1]['total_sales'], reverse=True))
   sales_by_year_sorted = dict(sorted(sales_by_year.items(), key=lambda item: item[1], reverse=True))
   sales_by_made_sorted = dict(sorted(sales_by_made.items(), key=lambda item: item[1], reverse=True))
 
@@ -68,12 +71,12 @@ def process_data(data):
     "The {} generated the most revenue: ${}".format(
       format_car(max_revenue["car"]), max_revenue["revenue"]),
     "The {} had the most sales: {}".format(
-      most_sales_model, sales_by_model[most_sales_model]),
+      most_sales_model, sales_by_model[most_sales_model]['total_sales']),
     "The most popular year was {} with {} sales.".format(
       most_sales_year, sales_by_year[most_sales_year])
   ]
 
-  return summary, sales_by_made_sorted
+  return summary, sales_by_made_sorted, sales_by_model_sorted
 
 
 def cars_dict_to_table(car_data):
@@ -86,19 +89,22 @@ def cars_dict_to_table(car_data):
 def main(argv):
   """Process the JSON data and generate a full report out of it."""
   data = load_data("data/car_sales.json")
-  summary, sales_by_made = process_data(data)
-  print(summary)
+  summary, sales_by_made, sales_by_model = process_data(data)
 
   # Turn this into a PDF report
   data_sorted = sorted(data, key=lambda item: item['total_sales'], reverse=True)
-  
+  sales_by_made_top_ten = {key:value for key,value in list(sales_by_made.items())[0:10]}
+  sales_by_model_top_ten = {key:value for key,value in list(sales_by_model.items())[0:10]}
+
   reports.generate(
     "output/cars.pdf",
     "Sales summary for last month",
     "<br/>".join(summary),
     cars_dict_to_table(data_sorted),
     "Total Sales by car made (top ten)",
-    {key:value for key,value in list(sales_by_made.items())[0:10]}
+    sales_by_made_top_ten,
+    "Revenue of best selling cars (million of dolars)",
+    sales_by_model_top_ten
   )
 
 # Send the PDF report as an email attachment
@@ -112,6 +118,3 @@ def main(argv):
 
 if __name__ == "__main__":
     main(True)
-
-# TODO: Create a pie chart for the total sales of each car made.
-# TODO: Create a bar chart showing total sales for the top 10 best selling vehicles using the ReportLab Diagra library. Put the vehicle name on the X-axis and total revenue (remember, price * total sales!) along the Y-axis.
