@@ -8,7 +8,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 
 def generate_report(attachment, title, paragraph ):
   styles = getSampleStyleSheet()
-  report = SimpleDocTemplate(filename)
+  report = SimpleDocTemplate(attachment)
   report_title = Paragraph(title, styles["h1"])
   report_info = Paragraph(paragraph, styles["BodyText"])
   empty_line = Spacer(1, 20)
