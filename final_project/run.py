@@ -4,7 +4,7 @@ from pathlib import Path
 import requests
 
 source_path = Path.cwd() / 'supplier-data' / 'descriptions'
-web_service_url = 'http://<linux-instance-external-ip>/fruits/'
+# web_service_url = 'http://<linux-instance-external-ip>/fruits/'
 
 for f in Path(source_path).iterdir():
   with open(f) as fruit_file:
@@ -15,7 +15,6 @@ for f in Path(source_path).iterdir():
       'description': description_lines[2].rstrip(),
       'image_name': '{}.jpeg'.format(f.stem)
     }
-    print(fruit_entry)
 #    res = requests.post(web_service_url, fruit_entry)
 #    res.raise_for_status()
     
