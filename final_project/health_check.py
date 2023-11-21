@@ -1,7 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
+import os
 import psutil
 import socket
+import emails
 
 def check_cpu(threshold):
   cpu_usage = psutil.cpu_percent(interval=1)
@@ -23,15 +25,22 @@ def check_hostname():
     return False
 
 def main():
-
+  subject = False
   if check_cpu(80):
-    print('Error - CPU usage is over 80%')
+    subject = "Error - CPU usage is over 80%"
   if check_disk(80):
-    print('Error - Available disk space is less than 20%')
+    subject = "Error - Available disk space is less than 20%"
   if check_memory(500):
-    print('Error - Available memory is less than 500MB')
+    subject = "Error - Available memory is less than 500MB"
   if not check_hostname():
-    print('Error - localhost cannot be resolved to 127.0.0.1')
+    subject = "Error - localhost cannot be resolved to 127.0.0.1"
+
+  if subject:
+    sender = "automation@example.com"
+    receiver = "{}@example.com".format(os.environ.get('USER'))
+    body = "Please check your system and resolve the issue as soon as possible."
+    message = emails.generate_email(sender, receiver, subject, body, False)
+    emails.send_email(message)
 
 if __name__ == '__main__':
   main()
